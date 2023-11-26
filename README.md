@@ -43,7 +43,7 @@ The experiments are conducted on CIFAR10 and ImageNet32. We use the dataloader p
 
 As stated in the paper, there are two different versions of ImageNet32 dataset. For fair comparisons, we use both versions of ImageNet32, one is downloaded from https://image-net.org/data/downsample/Imagenet32_train.zip, following Flow Matching [3], and the other is downloaded from http://image-net.org/small/train_32x32.tar (old version, no longer available), following [ScoreSDE](https://github.com/yang-song/score_sde) and [VDM](https://github.com/google-research/vdm). The former dataset applies anti-aliasing and is easier for maximum likelihood training.
 
-For convenience, we adapt both versions of ImageNet32 to `tensorflow_datasets`.
+For convenience, we adapt both versions of ImageNet32 to the format of `tfrecord`. You can download them from https://drive.google.com/drive/folders/1VCGusEV-yGle_9I6ncd5CpmsUYUu-kid and put them under `~/tensorflow_datasets`.
 
 ### Configs
 
@@ -64,7 +64,7 @@ config.model = d(
         second_order=False, # enable second order loss for finetuning
         velocity=True, # enable velocity parameterization
         importance=True, # enable importance sampling
-        dequantization="tn", # dequantization type, "u" (uniform)/"v" (variational)/"tn" (truncated normal)
+        dequantization="tn", # dequantization type, "u" (uniform)/"v" (variational)/"tn" (truncated-normal)
         num_importance=1, # number of importance samples for likelihood evaluation
     )
 ```
@@ -90,6 +90,8 @@ Finetune by the second order loss:
 
 ```shell
 python main.py --config=configs/cifar10.py --workdir=experiments/cifar10_VP_finetuned --mode=train --config.ckpt_restore_dir=experiments/cifar10_VP/cifar10/20230101-012345/checkpoints-0 --config.model.second_order=True --config.training.num_steps_train=6200000
+# For ImageNet32 (old version), we finetune with a batch size of 128 and accumulate the gradient every 4 steps to reduce the GPU memory requirements, which results in an effective batch size of 512.
+python main.py --config=configs/imagenet32.py --workdir=experiments/imagenet32_VP_finetuned --mode=train --config.ckpt_restore_dir=experiments/imagenet32_VP/imagenet32/20230101-012345/checkpoints-0 --config.model.second_order=True --config.training.num_steps_train=2500000 --config.training.batch_size_train=128 --config.optimizer.gradient_accumulation=4
 ```
 
 #### Likelihood Evaluation
@@ -106,9 +108,20 @@ python main.py --config=configs/cifar10.py --workdir=experiments/cifar10_VP --mo
 python main.py --config=configs/cifar10.py --workdir=experiments/cifar10_VP --mode=sample --checkpoint=experiments/cifar10_VP/cifar10/20230101-012345/checkpoints-0
 ```
 
-The sampled images will be saved to `workdir/samples` in the form of `.npz`.
+The sampled images will be saved to `workdir/samples` in the format of `.npz`.
 
 ## Pretrained checkpoints
+
+|                         |    CIFAR10     | ImageNet32 (new) |                 ImageNet32 (old)                  |
+| :---------------------: | :------------: | :--------------: | :-----------------------------------------------: |
+|          GPUs           | 8 x NVIDIA A40 |  8 x NVIDIA A40  |                  8 x NVIDIA A100                  |
+|          Steps          |       6M       |        2M        |                        2M                         |
+|       Batch size        |      128       |       128        |                        512                        |
+|   Steps (Finetuning)    |     +200k      |      +250k       |                       +500k                       |
+| Batch size (Finetuning) |      128       |       128        | 128 (with gradient accumulation of every 4 steps) |
+|        NLL (BPD)        |      2.56      |       3.43       |                       3.69                        |
+
+The models reported in the paper are trained **without data augmentation**.  You can download the checkpoints in different settings from https://drive.google.com/drive/folders/1cZ7zkWWooD2E8n_9slDMAA8w3KmkjzOC.
 
 ## References
 
@@ -123,10 +136,10 @@ If you find the code useful for your research, please consider citing:
 }
 ```
 
-This work is built upon some previous papers which might also interest you:
+There are some related papers which might also interest you:
 
 [1] Diederik P Kingma, Tim Salimans, Ben Poole, Jonathan Ho. "Variational diffusion models". *Advances in Neural Information Processing Systems*, 2021.
 
 [2] Cheng Lu, Kaiwen Zheng, Fan Bao, Jianfei Chen, Chongxuan Li, Jun Zhu. "Maximum likelihood training for score-based diffusion odes by high order denoising score matching". *International Conference on Machine Learning*, 2022.
 
-[3] Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, Matt Le. "Flow matching for generative modeling". *International Conference on Learning Representations*. 2022.
+[3] Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, Matt Le. "Flow matching for generative modeling". *International Conference on Learning Representations*, 2022.
