@@ -1,4 +1,6 @@
 # i-DODE
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/image-generation-on-cifar-10)](https://paperswithcode.com/sota/image-generation-on-cifar-10?p=improved-techniques-for-maximum-likelihood)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/image-generation-on-imagenet-32x32)](https://paperswithcode.com/sota/image-generation-on-imagenet-32x32?p=improved-techniques-for-maximum-likelihood)
 This repo is the official code for the paper [Improved Techniques for Maximum Likelihood Estimation for Diffusion ODEs](https://proceedings.mlr.press/v202/zheng23c.html) (ICML 2023).
 
 <h3><a href="https://arxiv.org/pdf/2305.03935.pdf">Paper</a> | <a href="https://arxiv.org/abs/2305.03935">arXiv</a></h3>
@@ -9,7 +11,7 @@ The code implementation is based on [google-research/vdm](https://github.com/goo
 
 ![](https://icml.cc/media/PosterPDFs/ICML%202023/23818.png)
 
-We achieve state-of-the-art likelihood estimation results by diffusion ODEs on image datasets (2.56 on CIFAR-10, 3.43/3.69 on ImageNet-32) *without variational dequantization or data augmentation*.
+We achieve state-of-the-art likelihood estimation results by diffusion ODEs on image datasets (2.56 on CIFAR-10, 3.43/3.69 on ImageNet-32) *without variational dequantization or data augmentation*, and *2.42* on CIFAR-10 with data augmentation.
 
 Our improved techniques include:
 
@@ -47,11 +49,12 @@ For convenience, we adapt both versions of ImageNet32 to the format of `tfrecord
 
 ### Configs
 
-There are three config files, corresponding to CIFAR10, ImageNet32 (old version) and ImageNet32 (new version), respectively.
+There are four config files, corresponding to CIFAR10, CIFAR10 (with data augmentation), ImageNet32 (old version) and ImageNet32 (new version), respectively.
 
 ```python
 configs
 ├── cifar10.py
+├── cifar10_aug.py
 ├── imagenet32.py
 └── imagenet32_new.py
 ```
@@ -112,16 +115,16 @@ The sampled images will be saved to `workdir/samples` in the format of `.npz`.
 
 ## Pretrained checkpoints
 
-|                         |    CIFAR10     | ImageNet32 (new) |                 ImageNet32 (old)                  |
-| :---------------------: | :------------: | :--------------: | :-----------------------------------------------: |
-|          GPUs           | 8 x NVIDIA A40 |  8 x NVIDIA A40  |                  8 x NVIDIA A100                  |
-|          Steps          |       6M       |        2M        |                        2M                         |
-|       Batch size        |      128       |       128        |                        512                        |
-|   Steps (Finetuning)    |     +200k      |      +250k       |                       +500k                       |
-| Batch size (Finetuning) |      128       |       128        | 128 (with gradient accumulation of every 4 steps) |
-|        NLL (BPD)        |      2.56      |       3.43       |                       3.69                        |
+|                         |    CIFAR10     | ImageNet32 (new) |                 ImageNet32 (old)                  | CIFAR10 (with data augmentation) |
+| :---------------------: | :------------: | :--------------: | :-----------------------------------------------: | :------------------------------: |
+|          GPUs           | 8 x NVIDIA A40 |  8 x NVIDIA A40  |                  8 x NVIDIA A100                  |         64 x NVIDIA A800         |
+|          Steps          |       6M       |        2M        |                        2M                         |              1.95M               |
+|       Batch size        |      128       |       128        |                        512                        |               1024               |
+|   Steps (Finetuning)    |     +200k      |      +250k       |                       +500k                       |                0                 |
+| Batch size (Finetuning) |      128       |       128        | 128 (with gradient accumulation of every 4 steps) |                \                 |
+|        NLL (BPD)        |      2.56      |       3.43       |                       3.69                        |               2.42               |
 
-The models reported in the paper are trained **without data augmentation**.  You can download the checkpoints in different settings from https://drive.google.com/drive/folders/1cZ7zkWWooD2E8n_9slDMAA8w3KmkjzOC.
+You can download the checkpoints in different settings from https://drive.google.com/drive/folders/1cZ7zkWWooD2E8n_9slDMAA8w3KmkjzOC.
 
 ## References
 

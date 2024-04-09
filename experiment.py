@@ -342,7 +342,20 @@ class Experiment(ABC):
         nfes = []
         for i in tqdm(range(200)):
             rng, sample_rng = jax.random.split(rng)
-            samples, nfe = self.p_sample(params=params)
+            p_sample = functools.partial(
+                self.sample_fn,
+                dummy_inputs=next(self.eval_iter)["images"],
+                rng=sample_rng,
+            )
+
+            def _gather(fn, *args, **kwargs):
+                samples, nfe = fn(*args, **kwargs)
+                shape = samples.shape
+                samples = samples.reshape((-1, shape[2], shape[3], shape[4]))
+                return samples, nfe
+
+            p_sample = functools.partial(_gather, fn=p_sample)
+            samples, nfe = p_sample(params=params)
             nfes.append(nfe)
             samples = samples.astype(np.uint8)
             with tf.io.gfile.GFile(os.path.join(eval_logdir, f"samples_{i}.npz"), "wb") as fout:
