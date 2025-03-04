@@ -1,6 +1,7 @@
 # i-DODE
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/image-generation-on-cifar-10)](https://paperswithcode.com/sota/image-generation-on-cifar-10?p=improved-techniques-for-maximum-likelihood)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/image-generation-on-imagenet-32x32)](https://paperswithcode.com/sota/image-generation-on-imagenet-32x32?p=improved-techniques-for-maximum-likelihood)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/density-estimation-on-cifar-10)](https://paperswithcode.com/sota/density-estimation-on-cifar-10?p=improved-techniques-for-maximum-likelihood)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/improved-techniques-for-maximum-likelihood/density-estimation-on-imagenet-32x32-1)](https://paperswithcode.com/sota/density-estimation-on-imagenet-32x32-1?p=improved-techniques-for-maximum-likelihood)
+
 This repo is the official code for the paper [Improved Techniques for Maximum Likelihood Estimation for Diffusion ODEs](https://proceedings.mlr.press/v202/zheng23c.html) (ICML 2023).
 
 <h3><a href="https://arxiv.org/pdf/2305.03935.pdf">Paper</a> | <a href="https://arxiv.org/abs/2305.03935">arXiv</a></h3>
